@@ -17,10 +17,10 @@ SPREADSHEET_ID = '1so7AoYxZ2NVG2IHdU4u8pQ2cZfEAGyj4GpqcIeR0hYg'
 RANGE_NAME = 'responses'
 
 
-def main():
-    """Shows basic usage of the Sheets API.
-    Prints values from a sample spreadsheet.
-    """
+def sheet_pull():
+    """Pulls data from the Google Sheet into a Pandas dataframe. This will
+        subsequently be loaded into a Postgres database."""
+
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -48,16 +48,12 @@ def main():
                                     range=RANGE_NAME).execute()
         values = result.get('values', [])
 
-        if not values:
+        if values:
+            return pd.DataFrame(values)
+        else:
             print('No data found.')
             return
-        else:
-            values_df = pd.DataFrame(values)
-            print(values_df)
+
 
     except HttpError as err:
         print(err)
-
-
-if __name__ == '__main__':
-    main()
