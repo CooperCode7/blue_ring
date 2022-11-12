@@ -130,3 +130,6 @@ dmypy.json
 
 # Secrets
 credentials.json
+
+# VS Code
+.vscode
