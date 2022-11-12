@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os.path
+import pandas as pd
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -12,8 +13,8 @@ from googleapiclient.errors import HttpError
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 # The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = '1so7AoYxZ2NVG2IHdU4u8pQ2cZfEAGyj4GpqcIeR0hYg'
-SAMPLE_RANGE_NAME = 'responses!A:AI'
+SPREADSHEET_ID = '1so7AoYxZ2NVG2IHdU4u8pQ2cZfEAGyj4GpqcIeR0hYg'
+RANGE_NAME = 'responses'
 
 
 def main():
@@ -43,18 +44,17 @@ def main():
 
         # Call the Sheets API
         sheet = service.spreadsheets()
-        result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                    range=SAMPLE_RANGE_NAME).execute()
+        result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
+                                    range=RANGE_NAME).execute()
         values = result.get('values', [])
 
         if not values:
             print('No data found.')
             return
+        else:
+            values_df = pd.DataFrame(values)
+            print(values_df)
 
-        print('Name, Major:')
-        for row in values:
-            # Print columns A and E, which correspond to indices 0 and 4.
-            print('%s, %s' % (row[0], row[4]))
     except HttpError as err:
         print(err)
 
