@@ -25,7 +25,7 @@ def sheet_pull():
 
     # Create the credentials.json file for Heroku
     if os.getenv("DEV_LOCATION", "local") == "heroku":
-        JSON_SECRET = json.dumps(os.getenv["GOOGLE_CLIENT_SECRETS"])
+        JSON_SECRET = json.dumps(os.getenv("GOOGLE_CLIENT_SECRETS"))
         with open("credentials.json", "w") as f:
             f.write(JSON_SECRET)
 
