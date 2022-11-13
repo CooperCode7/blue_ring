@@ -57,7 +57,7 @@ def sheet_pull():
         values = result.get("values", [])
 
         if values:
-            #print(pd.DataFrame(values))
+            print(pd.DataFrame(values))
             return pd.DataFrame(values)
         else:
             print("No data found.")
