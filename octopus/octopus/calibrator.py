@@ -72,7 +72,7 @@ def pg_conn():
     return db.connect()
 
 
-def data_push(self):
+def data_push():
     """Push the data from the dataframe to the postgres database."""
 
     with pg_conn() as conn:
