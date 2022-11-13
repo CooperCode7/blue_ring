@@ -69,8 +69,7 @@ def pg_conn():
         conn_string = conn_string.replace("postgres://", "postgresql://", 1)
 
     db = create_engine(conn_string)
-    db_conn = db.connect()
-    return psycopg2.connect(db_conn)
+    return db.connect()
 
 
 def data_push(self):
