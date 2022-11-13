@@ -2,6 +2,8 @@ from __future__ import print_function
 
 import os.path
 import pandas as pd
+import psycopg2
+from sqlalchemy import create_engine
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -61,3 +63,22 @@ class Extract:
 
         except HttpError as err:
             print(err)
+
+
+class Load:
+    def pg_conn(self):
+        """Establish the connection to the postgres database."""
+
+        # TODO: Add connection string as environment variable
+        conn_string = os.getenv("CONN_STRING")
+
+        db = create_engine(conn_string)
+        db_conn = db.connect()
+        return psycopg2.connect(db_conn)
+
+    def data_push(self):
+        """Push the data from the dataframe to the postgres database."""
+
+        with self.pg_conn() as conn:
+            sql_df = Extract.sheet_pull()
+            sql_df.to_sql("tracker", con=conn, if_exists="replace", index=False)
