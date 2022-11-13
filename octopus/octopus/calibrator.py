@@ -69,7 +69,11 @@ class Load:
     def pg_conn(self):
         """Establish the connection to the postgres database."""
 
+        # Heroku stores the dialect as "postgres" but SQLAlchemy requires "postgresql"
         conn_string = os.getenv("PG_CONN_STRING")
+        if conn_string and conn_string.startswith("postgres://"):
+            conn_string = conn_string.replace("postgres://", "postgresql://", 1)
+
         db = create_engine(conn_string)
         db_conn = db.connect()
         return psycopg2.connect(db_conn)
