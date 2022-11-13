@@ -69,9 +69,7 @@ class Load:
     def pg_conn(self):
         """Establish the connection to the postgres database."""
 
-        # TODO: Add connection string as environment variable
-        conn_string = os.getenv("CONN_STRING")
-
+        conn_string = os.getenv("PG_CONN_STRING")
         db = create_engine(conn_string)
         db_conn = db.connect()
         return psycopg2.connect(db_conn)
