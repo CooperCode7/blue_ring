@@ -1,8 +1,8 @@
 from __future__ import print_function
 
 import os.path
+import json
 import pandas as pd
-import psycopg2
 from sqlalchemy import create_engine
 
 from google.auth.transport.requests import Request
@@ -23,6 +23,8 @@ def sheet_pull():
     SPREADSHEET_ID = "1so7AoYxZ2NVG2IHdU4u8pQ2cZfEAGyj4GpqcIeR0hYg"
     RANGE_NAME = "responses"
 
+
+
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -34,7 +36,8 @@ def sheet_pull():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+            json_secret = json.loads(os.environ['GOOGLE_CLIENT_SECRETS'])
+            flow = InstalledAppFlow.from_client_secrets_file(json_secret, SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
         with open("token.json", "w") as token:
