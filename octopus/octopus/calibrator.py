@@ -23,7 +23,11 @@ def sheet_pull():
     SPREADSHEET_ID = "1so7AoYxZ2NVG2IHdU4u8pQ2cZfEAGyj4GpqcIeR0hYg"
     RANGE_NAME = "responses"
 
-
+    # Create the credentials.json file for Heroku
+    if os.getenv("DEV_LOCATION", "local") == "heroku":
+        JSON_SECRET = json.dumps(os.getenv["GOOGLE_CLIENT_SECRETS"])
+        with open("credentials.json", "w") as f:
+            f.write(JSON_SECRET)
 
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
@@ -36,8 +40,7 @@ def sheet_pull():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            json_secret = json.dumps(os.environ['GOOGLE_CLIENT_SECRETS'])
-            flow = InstalledAppFlow.from_client_secrets_file(json_secret, SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
         with open("token.json", "w") as token:
@@ -54,6 +57,7 @@ def sheet_pull():
         values = result.get("values", [])
 
         if values:
+            #print(pd.DataFrame(values))
             return pd.DataFrame(values)
         else:
             print("No data found.")
