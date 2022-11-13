@@ -132,5 +132,6 @@ dmypy.json
 credentials.json
 token.json
 
-# VS Code
+# Dev
 .vscode
+test.py
