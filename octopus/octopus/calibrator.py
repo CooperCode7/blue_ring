@@ -25,9 +25,10 @@ def sheet_pull():
 
     # Create the credentials.json file for Heroku
     if os.getenv("DEV_LOCATION", "local") == "heroku":
-        JSON_SECRET = json.dumps(os.getenv("GOOGLE_CLIENT_SECRETS"))
+        json_data = json.dumps(os.getenv("GOOGLE_CLIENT_SECRETS"))
+        json_clean = json.loads(json_data)
         with open("credentials.json", "w") as f:
-            f.write(JSON_SECRET)
+            f.write(json_clean)
 
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
