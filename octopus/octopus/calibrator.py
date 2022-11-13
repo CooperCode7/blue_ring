@@ -36,7 +36,7 @@ def sheet_pull():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            json_secret = json.loads(os.environ['GOOGLE_CLIENT_SECRETS'])
+            json_secret = json.dumps(os.environ['GOOGLE_CLIENT_SECRETS'])
             flow = InstalledAppFlow.from_client_secrets_file(json_secret, SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
