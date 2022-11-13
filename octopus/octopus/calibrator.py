@@ -11,7 +11,7 @@ from googleapiclient.errors import HttpError
 
 
 class Extract:
-    def sheet_pull():
+    def sheet_pull(self):
         """Pulls data from the Google Sheet into a Pandas dataframe. This will
         subsequently be loaded into a Postgres database."""
 
