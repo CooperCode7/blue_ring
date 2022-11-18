@@ -153,12 +153,12 @@ def tree_data(label_name):
     feat_df.columns = prep_df.columns
     feat_df.index = prep_df.index
 
-    return feat_df, lab_df, base_df
+    return feat_df, lab_df
 
 
 # Practice Runs
 # df = prep_data()
 # print(df)
 # print(days_before("event"))
-# feat_df, lab_df, base_df = tree_data("event")
+# feat_df, lab_df = tree_data("event")
 # print(feat_df)
