@@ -90,8 +90,15 @@ def prep_data():
     # drop the Timestamp since it's no longer necessary
     response_df = response_df.drop("Timestamp", axis=1)
 
-    # Convert the remaining values to 1/0
-    response_df = response_df.applymap(lambda x: 1 if x == "TRUE" else 0)
+    # Convert the remaining TRUE/FALSE values to 1/0
+    # Missing values should remain empty since those will be handled by the
+    # Iterative Imputer
+    response_df = response_df.applymap(lambda x: 1 if x == "TRUE" else x)
+    response_df = response_df.applymap(lambda x: 0 if x == "FALSE" else x)
+
+    # Have to mask empty columns that aren't handled by the above code so they
+    # are treated as NaN for the Imputer
+    response_df = response_df.mask(response_df == "")
 
     return response_df
 
@@ -102,22 +109,16 @@ def days_before(label_name):
     that are not consciously known, but are present."""
 
     adjusted_df = prep_data()
+
     # For the below, have to convert the true/false label to int because the
     # underlying numpy operation on diff will throw a deprecation warning.
-    # Previously, I used astype(int), but that stopped working since the dataframe
-    # now stores TRUE/FALSE as strings
-
-    # TODO: Figure out why it doesn't like the commented out code below
-    # Might have to convert the values to 1/0 in the prep data function and drop
-    # the timestamp there
-    # adjusted_df[label_name] = 1 if adjusted_df[label_name] == 'TRUE' else 0
-
     adjusted_df["label_diff"] = adjusted_df[label_name].diff(periods=-5).fillna(0)
     adjusted_df[label_name] = adjusted_df.apply(
         # Have to do a diff <0 since the future true (1) - the current row false (0) = -1
         lambda x: 1 if x[label_name] == 0 and x["label_diff"] < 0 else x[label_name],
         axis=1,
     ).astype(int)
+
     # Drop the label_diff column since it should not be included in subsequent predictions
     adjusted_df = adjusted_df.drop("label_diff", axis=1)
 
@@ -159,5 +160,5 @@ def tree_data(label_name):
 # df = prep_data()
 # print(df)
 # print(days_before("event"))
-#feat_df, lab_df, base_df = tree_data("event")
-#print(base_df)
+# feat_df, lab_df, base_df = tree_data("event")
+# print(feat_df)
