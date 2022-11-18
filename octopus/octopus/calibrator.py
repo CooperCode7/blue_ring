@@ -2,6 +2,10 @@ from __future__ import print_function
 
 import os.path
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
