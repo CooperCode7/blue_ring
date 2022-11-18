@@ -2,7 +2,6 @@ from __future__ import print_function
 
 import os.path
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 
@@ -72,17 +71,23 @@ def prep_data():
     # Read the Google Sheet dataframe
     response_df = sheet_pull()
 
-    #Identify the date columns.
-    datetime_columns = ['Timestamp']
+    # Identify the date columns.
+    datetime_columns = ["Timestamp"]
 
     # Convert the datetime_columns list
     response_df[datetime_columns] = response_df[datetime_columns].apply(pd.to_datetime)
 
     # Sort the dataframe so the latest response is always last
-    response_df = response_df.sort_values(by=['Timestamp'])
+    response_df = response_df.sort_values(by=["Timestamp"])
 
     # Reset the index since older values from an older response sheet were apeneded
     response_df = response_df.reset_index(drop=True)
+
+    # drop the Timestamp since it's no longer necessary
+    response_df = response_df.drop("Timestamp", axis=1)
+
+    # Convert the remaining values to 1/0
+    response_df = response_df.applymap(lambda x: 1 if x == "TRUE" else 0)
 
     return response_df
 
@@ -93,22 +98,22 @@ def days_before(label_name):
     that are not consciously known, but are present."""
 
     adjusted_df = prep_data()
-    # For the below, have to convert the true/false label to int because the 
-    # underlying numpy operation on diff will throw a deprecation warning. 
-    # Previously, I used astype(int), but that stopped working.
+    # For the below, have to convert the true/false label to int because the
+    # underlying numpy operation on diff will throw a deprecation warning.
+    # Previously, I used astype(int), but that stopped working since the dataframe
+    # now stores TRUE/FALSE as strings
 
-    adjusted_df[label_name] = 1 if adjusted_df[label_name] is True else 0
+    # TODO: Figure out why it doesn't like the commented out code below
+    # Might have to convert the values to 1/0 in the prep data function and drop
+    # the timestamp there
+    # adjusted_df[label_name] = 1 if adjusted_df[label_name] == 'TRUE' else 0
 
-    adjusted_df["label_diff"] = (
-        adjusted_df[label_name].diff(periods=-5).fillna(0)
-    )
+    adjusted_df["label_diff"] = adjusted_df[label_name].diff(periods=-5).fillna(0)
     adjusted_df[label_name] = adjusted_df.apply(
         # Have to do a diff <0 since the future true (1) - the current row false (0) = -1
-        lambda x: True
-        if x[label_name] is False and x["label_diff"] < 0
-        else x[label_name],
+        lambda x: 1 if x[label_name] == 0 and x["label_diff"] < 0 else x[label_name],
         axis=1,
-    )
+    ).astype(int)
     # Drop the label_diff column since it should not be included in subsequent predictions
     adjusted_df = adjusted_df.drop("label_diff", axis=1)
 
@@ -122,21 +127,9 @@ def tree_data(label_name):
     # Create the base dataframe to use for the algorithms
     base_df = days_before(label_name)
 
-    # Specify the columns to drop from the train/test dataframes
-    drop_col = ["Timestamp"]
-    drop_col.insert(0, label_name)
-
     # This sequence will pull in the dataframes necessary to train and test the model
-    prep_df = base_df.drop(drop_col, axis=1)
+    prep_df = base_df.drop(label_name, axis=1)
     lab_df = base_df[label_name]
-
-    # Convert the label values into numbers so it is easier to deal with them as
-    # classes down the line when visualizing
-    le = LabelEncoder()
-    lab_df = le.fit_transform(lab_df)
-
-    # Convert the feature values from True/False to 1/0
-    prep_df = prep_df.applymap(lambda x: 1 if x is True else 0)
 
     # Drop any column that has all nan (not a number) values. If a column has all
     # nan, the imputer won't work
@@ -155,14 +148,12 @@ def tree_data(label_name):
     feat_df.columns = prep_df.columns
     feat_df.index = prep_df.index
 
-    # This sequence will be used to get the last record data used for predicting.
-    # Using the feat_df dataframe since the target label and timestamp aren't necessary
-    last_df = feat_df.tail(1)
+    return feat_df, lab_df, base_df
 
-    return feat_df, lab_df, last_df
 
-df = prep_data()
-print(df)
-print(days_before("event"))
-_,_,last_df = tree_data('event')
-print(last_df)
+# Practice Runs
+# df = prep_data()
+# print(df)
+# print(days_before("event"))
+#feat_df, lab_df, base_df = tree_data("event")
+#print(base_df)
