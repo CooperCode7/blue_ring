@@ -152,7 +152,7 @@ def tree_data(label_name):
     imp_mean.fit(prep_df)
 
     # Create a new features data frame with the imputed value
-    feat_df = pd.DataFrame(data=imp_mean.transform(prep_df), dtype="int")
+    feat_df = pd.DataFrame(data=imp_mean.transform(prep_df)).astype(int)
 
     # Assign the actual column names to the imperative imputer dataframe
     feat_df.columns = prep_df.columns
@@ -211,3 +211,8 @@ def classify(label_name):
     cv_score = model.best_score_
 
     return final_pred, accuracy, cv_score
+
+fp, a, cv = classify('event')
+print(fp)
+print(a)
+print(cv)
