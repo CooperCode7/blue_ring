@@ -210,4 +210,4 @@ def classify(label_name):
     accuracy = metrics.accuracy_score(y_test, test_pred)
     cv_score = model.best_score_
 
-    return final_pred, test_pred, accuracy, cv_score
+    return final_pred, accuracy, cv_score
