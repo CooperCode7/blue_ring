@@ -5,6 +5,11 @@ import pandas as pd
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn import metrics
+
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -20,8 +25,8 @@ def sheet_pull():
     # If modifying these scopes, delete the file token.json.
     SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
-    # The ID and range of a sample spreadsheet.
-    SPREADSHEET_ID = "1so7AoYxZ2NVG2IHdU4u8pQ2cZfEAGyj4GpqcIeR0hYg"
+    # The ID and range of the Google Sheet.
+    SPREADSHEET_ID = os.getenv("GOOGLE_SHEET_ID")
     RANGE_NAME = "responses"
 
     creds = None
@@ -147,7 +152,7 @@ def tree_data(label_name):
     imp_mean.fit(prep_df)
 
     # Create a new features data frame with the imputed value
-    feat_df = pd.DataFrame(data=imp_mean.transform(prep_df), dtype="int")
+    feat_df = pd.DataFrame(data=imp_mean.transform(prep_df)).astype(int)
 
     # Assign the actual column names to the imperative imputer dataframe
     feat_df.columns = prep_df.columns
@@ -156,9 +161,53 @@ def tree_data(label_name):
     return feat_df, lab_df
 
 
-# Practice Runs
-# df = prep_data()
-# print(df)
-# print(days_before("event"))
-# feat_df, lab_df = tree_data("event")
-# print(feat_df)
+def train_test(label_name):
+    """Train the data to be used in the Random Forest algorithm."""
+
+    # Bring in the necessary DataFrames and assign them to X/y variables
+    feat_df, lab_df = tree_data(label_name)
+    X = feat_df
+    y = lab_df
+
+    # Get the training and testing values
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=1
+    )
+
+    return X_train, X_test, y_train, y_test
+
+
+def classify(label_name):
+    """Take the trained data and use the Random Forest algorithm to classify
+    each record"""
+
+    # Import the feature DataFrame to be used for the final prediction
+    feat_df, _ = tree_data(label_name)
+
+    # Unpack the values in the tuple from the previous functions
+    X_train, X_test, y_train, y_test = train_test(label_name)
+
+    # Create the classifier model with the default parameters.
+    classifier = RandomForestClassifier()
+
+    # Create the parameters to be used in cross validation.
+    # Starting small for now since max depth and max_features had the most impact
+    param_dict = {"max_depth": [3, 5, 7, 9], "max_features": [0.20, 0.33, "sqrt"]}
+
+    # Apply the cross validation function to the existing classifier
+    grid_clf = GridSearchCV(estimator=classifier, param_grid=param_dict)
+
+    # Fit the dataset to the new random forest classifier with cross validation
+    model = grid_clf.fit(X_train, y_train)
+
+    # Run the test model for accuracy scores
+    test_pred = model.predict(X_test)
+
+    # Run the model against the entire DataFrame
+    final_pred = model.predict(feat_df)
+
+    # Provide simple accuracy scores.
+    accuracy = metrics.accuracy_score(y_test, test_pred)
+    cv_score = model.best_score_
+
+    return final_pred, accuracy, cv_score
