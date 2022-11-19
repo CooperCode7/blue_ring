@@ -27,7 +27,7 @@ def sheet_pull():
 
     # The ID and range of the Google Sheet.
     SPREADSHEET_ID = os.getenv("GOOGLE_SHEET_ID")
-    RANGE_NAME = "responses"
+    RANGE_NAME = os.getenv("GOOGLE_SHEET_RANGE")
 
     creds = None
 
