@@ -158,7 +158,7 @@ def tree_data(label_name):
     feat_df.columns = prep_df.columns
     feat_df.index = prep_df.index
 
-    return feat_df, lab_df, prep_df
+    return feat_df, lab_df
 
 
 def train_test(label_name):
@@ -181,6 +181,9 @@ def classify(label_name):
     """Take the trained data and use the Random Forest algorithm to classify
     each record"""
 
+    # Import the feature DataFrame to be used for the final prediction
+    feat_df, _ = tree_data(label_name)
+
     # Unpack the values in the tuple from the previous functions
     X_train, X_test, y_train, y_test = train_test(label_name)
 
@@ -197,11 +200,14 @@ def classify(label_name):
     # Fit the dataset to the new random forest classifier with cross validation
     model = grid_clf.fit(X_train, y_train)
 
-    # Run the test model and the actual prediction
+    # Run the test model for accuracy scores
     test_pred = model.predict(X_test)
+
+    # Run the model against the entire DataFrame
+    final_pred = model.predict(feat_df)
 
     # Provide simple accuracy scores.
     accuracy = metrics.accuracy_score(y_test, test_pred)
     cv_score = model.best_score_
 
-    return test_pred, accuracy, cv_score
+    return final_pred, test_pred, accuracy, cv_score
