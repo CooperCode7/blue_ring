@@ -25,8 +25,8 @@ def sheet_pull():
     # If modifying these scopes, delete the file token.json.
     SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
-    # The ID and range of a sample spreadsheet.
-    SPREADSHEET_ID = "1so7AoYxZ2NVG2IHdU4u8pQ2cZfEAGyj4GpqcIeR0hYg"
+    # The ID and range of the Google Sheet.
+    SPREADSHEET_ID = os.getenv("GOOGLE_SHEET_ID")
     RANGE_NAME = "responses"
 
     creds = None
