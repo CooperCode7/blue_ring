@@ -5,7 +5,6 @@ import pandas as pd
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
@@ -174,12 +173,6 @@ def train_test(label_name):
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.3, random_state=1
     )
-
-    # Feature Scaling - may not be necessary since all the values are true/false
-    # TODO: Remove this in a future commit. Keeping for historical purposes.
-    sc = StandardScaler()
-    X_train = sc.fit_transform(X_train)
-    X_test = sc.transform(X_test)
 
     return X_train, X_test, y_train, y_test
 
