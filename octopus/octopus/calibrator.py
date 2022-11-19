@@ -159,7 +159,7 @@ def tree_data(label_name):
     feat_df.columns = prep_df.columns
     feat_df.index = prep_df.index
 
-    return feat_df, lab_df
+    return feat_df, lab_df, prep_df
 
 
 # Practice Runs
