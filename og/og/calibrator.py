@@ -89,10 +89,10 @@ def prep_data():
     # Sort the dataframe so the latest response is always last
     response_df = response_df.sort_values(by=["Timestamp"])
 
-    # Reset the index since older values from an older response sheet were apeneded
+    # Reset the index to address the re-sort
     response_df = response_df.reset_index(drop=True)
 
-    # drop the Timestamp since it's no longer necessary
+    # Drop the Timestamp since it's no longer necessary
     response_df = response_df.drop("Timestamp", axis=1)
 
     # Convert the remaining TRUE/FALSE values to 1/0
