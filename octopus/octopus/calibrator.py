@@ -211,8 +211,3 @@ def classify(label_name):
     cv_score = model.best_score_
 
     return final_pred, accuracy, cv_score
-
-fp, a, cv = classify('event')
-print(fp)
-print(a)
-print(cv)
