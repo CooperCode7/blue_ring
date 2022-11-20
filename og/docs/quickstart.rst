@@ -17,4 +17,3 @@ The raw data is collected by a Google Form and stored in a Google Sheet.
 * Create another local environment variable called CALIBRATOR_LABEL_NAME and assign the column you want to predict on.
  * Example: ```export CALIBRATOR_LABEL_NAME="good_mood"``` 
 * TBD - waiting on the app to be finished before providing further instructions.
- * As long as the environment variables are set-up properly, the credentials/token files are valid, and a Google Sheet with the data exists, running main.py should produce the correct output.
