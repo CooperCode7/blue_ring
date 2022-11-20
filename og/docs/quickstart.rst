@@ -3,7 +3,7 @@ The raw data is collected by a Google Form and stored in a Google Sheet. There i
 ### Getting Started
 * Create a Google Form in your Gmail account.
  * The form should only consist of questions with true/false answers.
- * Columns can be called anything, but a good rule of thumb is to select one column that will be predicted on based on behaviors tracked in the other columns. Example: daily_mood is the column to predict and strength_training is one of the behaviors tracked.
+ * Columns can be called anything, but a good rule of thumb is to select one column that will be predicted on based on behaviors tracked in the other columns. Example: good_mood is the column to predict and strength_training is one of the behaviors tracked.
 * Fill out a response to the Form.
 * Create a Google Sheet from the Form. Give the sheet a one word name (ex. Tracker).
 * Name the tab with the responses using one word (ex. responses).
