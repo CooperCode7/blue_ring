@@ -27,7 +27,7 @@ def sheet_pull():
 
     # The ID and range of the Google Sheet.
     SPREADSHEET_ID = os.getenv("GOOGLE_SHEET_ID")
-    RANGE_NAME = "responses"
+    RANGE_NAME = os.getenv("GOOGLE_SHEET_RANGE")
 
     creds = None
 
@@ -89,10 +89,17 @@ def prep_data():
     # Sort the dataframe so the latest response is always last
     response_df = response_df.sort_values(by=["Timestamp"])
 
-    # Reset the index since older values from an older response sheet were apeneded
+    # Reset the index to address the re-sort
     response_df = response_df.reset_index(drop=True)
 
-    # drop the Timestamp since it's no longer necessary
+    # Keep an original version before dropping the Timestamp so it can be
+    # connected to the predictions. Convert the string TRUE/FALSE valeus to
+    # boolean while leaving missing and datetime data intact
+    timestamp_df = response_df
+    timestamp_df = timestamp_df.applymap(lambda x: True if x == "TRUE" else x)
+    timestamp_df = timestamp_df.applymap(lambda x: False if x == "FALSE" else x)
+
+    # Drop the Timestamp since it's no longer necessary
     response_df = response_df.drop("Timestamp", axis=1)
 
     # Convert the remaining TRUE/FALSE values to 1/0
@@ -105,7 +112,7 @@ def prep_data():
     # are treated as NaN for the Imputer
     response_df = response_df.mask(response_df == "")
 
-    return response_df
+    return response_df, timestamp_df
 
 
 def days_before(label_name):
@@ -113,7 +120,7 @@ def days_before(label_name):
     first true label value for a given time block. This helps catch creeping events
     that are not consciously known, but are present."""
 
-    adjusted_df = prep_data()
+    adjusted_df, _ = prep_data()
 
     # For the below, have to convert the true/false label to int because the
     # underlying numpy operation on diff will throw a deprecation warning.
@@ -203,11 +210,27 @@ def classify(label_name):
     # Run the test model for accuracy scores
     test_pred = model.predict(X_test)
 
-    # Run the model against the entire DataFrame
-    final_pred = model.predict(feat_df)
+    # Run the model against the entire DataFrame and return a list of predictions
+    final_pred = list(model.predict(feat_df))
 
     # Provide simple accuracy scores.
     accuracy = metrics.accuracy_score(y_test, test_pred)
     cv_score = model.best_score_
 
     return final_pred, accuracy, cv_score
+
+
+def reconnect(label_name):
+    """Take the list of predictions and add them as a column to the original dataframe."""
+
+    # Pull in the necessary objects
+    _, timestamp_df = prep_data()
+    final_pred, accuracy, cv_score = classify(label_name)
+
+    # Assign the final prediction list to a column on the dataframe
+    timestamp_df["predicted_event"] = final_pred
+
+    # Convert the new column values to boolean
+    timestamp_df["predicted_event"] = timestamp_df["predicted_event"].astype(bool)
+
+    return timestamp_df, accuracy, cv_score
