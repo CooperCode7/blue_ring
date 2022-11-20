@@ -93,8 +93,11 @@ def prep_data():
     response_df = response_df.reset_index(drop=True)
 
     # Keep an original version before dropping the Timestamp so it can be
-    # connected to the predictions
+    # connected to the predictions. Convert the string TRUE/FALSE valeus to
+    # boolean while leaving missing and datetime data intact
     timestamp_df = response_df
+    timestamp_df = timestamp_df.applymap(lambda x: True if x == "TRUE" else x)
+    timestamp_df = timestamp_df.applymap(lambda x: False if x == "FALSE" else x)
 
     # Drop the Timestamp since it's no longer necessary
     response_df = response_df.drop("Timestamp", axis=1)
@@ -220,9 +223,14 @@ def classify(label_name):
 def reconnect(label_name):
     """Take the list of predictions and add them as a column to the original dataframe."""
 
+    # Pull in the necessary objects
     _, timestamp_df = prep_data()
     final_pred, accuracy, cv_score = classify(label_name)
+
+    # Assign the final prediction list to a column on the dataframe
     timestamp_df["predicted_event"] = final_pred
+
+    # Convert the new column values to boolean
     timestamp_df["predicted_event"] = timestamp_df["predicted_event"].astype(bool)
 
     return timestamp_df, accuracy, cv_score
