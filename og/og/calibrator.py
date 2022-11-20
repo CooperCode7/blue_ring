@@ -124,7 +124,11 @@ def days_before(label_name):
 
     # For the below, have to convert the true/false label to int because the
     # underlying numpy operation on diff will throw a deprecation warning.
-    adjusted_df["label_diff"] = adjusted_df[label_name].diff(periods=-5).fillna(0)
+    days_offset = -int(os.getenv("DAYS_OFFSET", 0))
+    print(days_offset)
+    adjusted_df["label_diff"] = (
+        adjusted_df[label_name].diff(periods=days_offset).fillna(0)
+    )
     adjusted_df[label_name] = adjusted_df.apply(
         # Have to do a diff <0 since the future true (1) - the current row false (0) = -1
         lambda x: 1 if x[label_name] == 0 and x["label_diff"] < 0 else x[label_name],
