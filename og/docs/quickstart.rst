@@ -12,4 +12,6 @@ The raw data is collected by a Google Form and stored in a Google Sheet. There i
  * Example: ```export GOOGLE_SHEET_ID="1JSDFIF_BR74942JFIJBSLWEO932I0438DJFHEJK"```
 * Create another local environment variable called GOOGLE_SHEET_RANGE and assign the tab name with the response data to it.
  * Example: ```export GOOGLE_SHEET_RANGE="responses"```
+* Create another local environment variable called CALIBRATOR_LABEL_NAME and assign the column you want to predict on.
+ * Example: ```export CALIBRATOR_LABEL_NAME="good_mood"``` 
 * TBD - waiting on the app to be finished before providing further instructions
