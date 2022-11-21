@@ -122,15 +122,18 @@ def days_before(label_name):
 
     adjusted_df, _ = prep_data()
 
-    # For the below, have to convert the true/false label to int because the
-    # underlying numpy operation on diff will throw a deprecation warning.
+    # Get the actual days to offset by subtracting the var from 0.
     days_offset = 0 - int(os.getenv("DAYS_OFFSET", 0))
-    print(days_offset)
+
+    # Add the label diff field used to determine how many days to set backwards
+    # from the start of the event
     adjusted_df["label_diff"] = (
         adjusted_df[label_name].diff(periods=days_offset).fillna(0)
     )
+
+    # Update the label value based on the results of the label_diff value
+    # Have to do a diff < 0 since the future true (1) - the current row false (0) = -1
     adjusted_df[label_name] = adjusted_df.apply(
-        # Have to do a diff <0 since the future true (1) - the current row false (0) = -1
         lambda x: 1 if x[label_name] == 0 and x["label_diff"] < 0 else x[label_name],
         axis=1,
     ).astype(int)
