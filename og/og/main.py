@@ -10,8 +10,11 @@ if __name__ == "__main__":
     # Pull in the necessary objects
     predicted_df, accuracy, cv_score = calibrator.reconnect(label_name)
 
-    # # Print out the prediction vs. actual for the last 30 days as well as the accuracy scores
-    print(predicted_df[['Timestamp','event', 'predicted_event']].tail(30))
+    # Set the DataFrame to show all rows
+    pd.set_option('display.max_rows', None)
+
+    # # Print out the prediction vs. actual for the last 90 days as well as the accuracy scores
+    print(predicted_df[['Timestamp','event', 'predicted_event']].tail(90))
     print(f"Accuracy: {accuracy}")
     print(f"CV Score: {cv_score}")
 
