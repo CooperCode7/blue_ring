@@ -1,5 +1,4 @@
 import os
-import pandas as pd
 import calibrator
 
 if __name__ == "__main__":
