@@ -11,5 +11,7 @@ if __name__ == "__main__":
         calibrator.get_prediction_table(label_name)
     elif user_input == 'feature importance':
         calibrator.get_feature_importance(label_name)
+    elif user_input == 'decision tree':
+        calibrator.get_decision_tree(label_name)
     else:
         print("Incorrect argument supplied.")
