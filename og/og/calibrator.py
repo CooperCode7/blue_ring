@@ -10,6 +10,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn import metrics
 
+import matplotlib.pyplot as pyplot
+
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -224,7 +226,7 @@ def classify(label_name):
     accuracy = metrics.accuracy_score(y_test, test_pred)
     cv_score = model.best_score_
 
-    return final_pred, accuracy, cv_score
+    return final_pred, accuracy, cv_score, model, feat_df
 
 
 def reconnect(label_name):
@@ -232,7 +234,7 @@ def reconnect(label_name):
 
     # Pull in the necessary objects
     _, timestamp_df = prep_data()
-    final_pred, accuracy, cv_score = classify(label_name)
+    final_pred, accuracy, cv_score, _, _ = classify(label_name)
 
     # Assign the final prediction list to a column on the dataframe
     timestamp_df["predicted_event"] = final_pred
@@ -241,3 +243,17 @@ def reconnect(label_name):
     timestamp_df["predicted_event"] = timestamp_df["predicted_event"].astype(bool)
 
     return timestamp_df, accuracy, cv_score
+
+
+def prioritize(label_name):
+    """Create a feature importance visualization to show which features have the
+    greatest impact."""
+
+    _, _, _, model, feat_df = classify(label_name)
+    feat_importances = pd.Series(
+        model.best_estimator_.feature_importances_, index=feat_df.columns
+    )
+    feat_importances.sort_values(ascending=True, inplace=True)
+    feat_importances.plot(kind="barh")
+    pyplot.title("Feature Importances")
+    pyplot.show()
