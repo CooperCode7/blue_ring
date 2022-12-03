@@ -289,15 +289,19 @@ def get_decision_tree(label_name):
     # Train Decision Tree Classifer
     trained_clf = clf.fit(X_train, y_train)
 
+    # Set up the plot parameters
+    fig, ax = pyplot.subplots(figsize=(10, 10))
+
     # Visualize the decision tree
-    tree.export_graphviz(
+    tree.plot_tree(
         trained_clf, 
-        out_file='tree.dot',
         feature_names = feat_df.columns,
-        class_names = label_name,
-        rounded = True, 
-        proportion = False, 
-        precision = 2, 
-        filled = True
+        class_names = True,
+        rounded = True,
+        filled = True,
+        max_depth = 3
     )
 
+    # Output the visualization
+    pyplot.title("Decision Tree")
+    pyplot.show()
