@@ -289,6 +289,10 @@ def get_decision_tree(label_name):
     # Train Decision Tree Classifer
     trained_clf = clf.fit(X_train, y_train)
 
+    # Get the class names from the classifier and turn them into string so they
+    # can be used in the decision tree
+    class_list = [str(x) for x in trained_clf.classes_]
+
     # Set up the plot parameters
     fig, ax = pyplot.subplots(figsize=(10, 10))
 
@@ -296,7 +300,7 @@ def get_decision_tree(label_name):
     tree.plot_tree(
         trained_clf, 
         feature_names = feat_df.columns,
-        class_names = True,
+        class_names = class_list,
         rounded = True,
         filled = True,
         max_depth = 3
