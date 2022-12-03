@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn import metrics
+from sklearn import tree
 
 import matplotlib.pyplot as pyplot
 
@@ -271,3 +272,32 @@ def get_feature_importance(label_name):
     feat_importances.plot(kind="barh")
     pyplot.title("Feature Importances")
     pyplot.show()
+
+def get_decision_tree(label_name):
+    """Get a decision tree visualization using one of the trees from the Random 
+    Forest"""
+
+    # Get the feature dataframe for the columns
+    _, _, _, _, feat_df = classify(label_name)
+
+    # Get the training and test values
+    X_train, _, y_train, _ = train_test(label_name)
+
+    # Create Decision Tree classifer object
+    clf = tree.DecisionTreeClassifier()
+
+    # Train Decision Tree Classifer
+    trained_clf = clf.fit(X_train, y_train)
+
+    # Visualize the decision tree
+    tree.export_graphviz(
+        trained_clf, 
+        out_file='tree.dot',
+        feature_names = feat_df.columns,
+        class_names = label_name,
+        rounded = True, 
+        proportion = False, 
+        precision = 2, 
+        filled = True
+    )
+
