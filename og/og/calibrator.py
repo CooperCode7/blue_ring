@@ -9,9 +9,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn import metrics
+from sklearn import tree
 
 import matplotlib.pyplot as pyplot
-
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -271,4 +271,41 @@ def get_feature_importance(label_name):
     feat_importances.sort_values(ascending=True, inplace=True)
     feat_importances.plot(kind="barh")
     pyplot.title("Feature Importances")
+    pyplot.show()
+
+def get_decision_tree(label_name):
+    """Get a decision tree visualization using one of the trees from the Random 
+    Forest"""
+
+    # Get the feature dataframe for the columns
+    _, _, _, _, feat_df = classify(label_name)
+
+    # Get the training and test values
+    X_train, _, y_train, _ = train_test(label_name)
+
+    # Create Decision Tree classifer object
+    clf = tree.DecisionTreeClassifier()
+
+    # Train Decision Tree Classifer
+    trained_clf = clf.fit(X_train, y_train)
+
+    # Get the class names from the classifier and turn them into string so they
+    # can be used in the decision tree
+    class_list = [str(x) for x in trained_clf.classes_]
+
+    # Set up the plot parameters
+    fig, ax = pyplot.subplots(figsize=(10, 10))
+
+    # Visualize the decision tree
+    tree.plot_tree(
+        trained_clf, 
+        feature_names = feat_df.columns,
+        class_names = class_list,
+        rounded = True,
+        filled = True,
+        max_depth = 3 # Anything beyond 3 is too hard to read
+    )
+
+    # Output the visualization
+    pyplot.title("Decision Tree")
     pyplot.show()
