@@ -303,7 +303,7 @@ def get_decision_tree(label_name):
         class_names = class_list,
         rounded = True,
         filled = True,
-        max_depth = 3
+        max_depth = 3 # Anything beyond 3 is too hard to read
     )
 
     # Output the visualization
