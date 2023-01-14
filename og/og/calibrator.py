@@ -102,7 +102,7 @@ def prep_data():
     timestamp_df = timestamp_df.applymap(lambda x: False if x == "FALSE" else x)
 
     # Drop the Timestamp since it's no longer necessary
-    response_df = response_df.drop("Timestamp", axis=1)
+    response_df = response_df.drop(["Timestamp", "user"], axis=1)
 
     # Convert the remaining TRUE/FALSE values to 1/0
     # Missing values should remain empty since those will be handled by the
