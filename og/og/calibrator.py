@@ -255,7 +255,7 @@ def get_prediction_table(label_name):
     pd.set_option("display.max_rows", None)
 
     # # Print out the prediction vs. actual for the last 90 days as well as the accuracy scores
-    print(predicted_df[["Timestamp", "event", "predicted_event"]].tail(90))
+    print(predicted_df[["Timestamp", label_name, "predicted_event"]].tail(90))
     print("Accuracy: " + "{:.0%}".format(accuracy))
     print(f"CV Score: " + "{:.0%}".format(cv_score))
 
