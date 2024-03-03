@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
-# Temporary storage for survey questions
+# Temporary storage for survey questions.
+# TODO: Replace this with a Postgres DB.
 questions = []
 
 @app.route('/')
