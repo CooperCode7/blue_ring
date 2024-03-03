@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Survey</title>
+</head>
+<body>
+    <h1>Create Survey</h1>
+    <form action="{{ url_for('create_survey') }}" method="post">
+        <label for="question">Enter True/False Question:</label><br>
+        <input type="text" id="question" name="question"><br><br>
+        <button type="submit">Add Question</button>
+    </form>
+    <h2>Survey Questions</h2>
+    <ul>
+    {% for question in questions %}
+        <li>{{ question.question }}</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
